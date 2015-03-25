@@ -7,6 +7,20 @@ Call any function on another thread.
 npm install requireAsync
 ````
 
+## Usage
+````javascript
+var requireAsync = require('requireAsync');
+
+var someModule = requireAsync('some-module');
+var someFile = requireAsync('./file.js');
+````
+
+The parameters for the returned function are
+
+ - ``func`` - the function to call inside your required module or file
+ - ``arguments`` - list as many arguments between this and the callback, these will be passed to the function
+ - ``callback`` - the last argument must be a callback
+
 ## Example usage
 ````javascript
 var requireAsync = require('requireAsync');

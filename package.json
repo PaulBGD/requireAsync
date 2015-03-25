@@ -1,4 +1,24 @@
 {
   "name": "requireAsync",
-  "version": "0.0.1"
+  "version": "0.0.1",
+  "description": "Require any module or file and call it's functions async",
+  "keywords": [
+    "async"
+  ],
+  "homepage": "https://github.com/PaulBGD/requireAsync",
+  "bugs": {
+    "url": "https://github.com/PaulBGD/requireAsync/issues",
+    "email": "paul@burngames.net"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Paul Sauve",
+    "email": "paul@burngames.net",
+    "url": "https://paulb.gd"
+  },
+  "main": "index",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PaulBGD/requireAsync.git"
+  }
 }

@@ -9,7 +9,7 @@ npm install requireAsync
 
 ## Usage
 ````javascript
-var requireAsync = require('requireAsync');
+var requireAsync = require('require-async');
 
 var someModule = requireAsync('some-module');
 var someFile = requireAsync('./file.js');
@@ -23,7 +23,7 @@ The parameters for the returned function are
 
 ## Example usage
 ````javascript
-var requireAsync = require('requireAsync');
+var requireAsync = require('require-async');
 
 var bcrypt = requireAsync('bcryptjs');
 

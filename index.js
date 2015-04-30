@@ -3,6 +3,8 @@ var pathJoin = require('path').join;
 var fs = require('fs');
 
 module.exports = function requireAsync(path) {
+    var id = 0; // current id for the required module
+
     try {
         var file = require.resolve(path);
     } catch (err) {
@@ -15,6 +17,10 @@ module.exports = function requireAsync(path) {
             throw new Error('File "' + path + '" does not exist.');
         }
     }
+
+    var forked;
+    var timeoutId = -1;
+    var waiting = 0;
 
     /**
      * Calls the specified functions with arguments
@@ -32,14 +38,36 @@ module.exports = function requireAsync(path) {
         if (typeof callback !== 'function') {
             throw new Error('Callback must be a function.');
         }
-        var func = args.shift();
-        var forked = fork(__dirname + '/handler.js');
-        forked.send({'func': func, 'args': args, 'file': file});
+        var func = args.shift() || '';
+        if (!forked) {
+            forked = fork(pathJoin(__dirname, 'handler.js'));
+            var currentId = timeoutId = setInterval(function () {
+                if (timeoutId == currentId && waiting == 0 && forked) {
+                    // kill process
+                    forked.kill();
+                    forked = null;
+                    clearInterval(currentId);
+                    timeoutId = 0;
+                }
+            }, 30 * 1000); // keep alive for 30 seconds todo: configurable
+        }
+        var messageId = id++;
+        forked.send({'func': func, 'args': args, 'file': file, 'id': messageId});
+        waiting++;
+        forked.setMaxListeners((forked._maxListeners || 0) + 2);
         forked.on('error', function (err) {
-            callback(err);
+            if (err.id == messageId) {
+                err = err.data;
+                callback(err);
+                waiting--;
+            }
         });
         forked.on('message', function (message) {
-            callback(message.error, message.error ? undefined : message.data);
+            if (message.id == messageId) {
+                message = message.data;
+                callback(message.error, message.error ? undefined : message.data);
+                waiting--;
+            }
         });
     };
 };

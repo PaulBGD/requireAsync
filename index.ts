@@ -1,27 +1,29 @@
 /// <reference path="typings/tsd.d.ts" />
-var Child = require('child_process');
-var path = require('path');
-var fs = require('fs');
-module.exports = function requireAsync(modulePath) {
+
+import Child = require('child_process');
+import path = require('path');
+import fs = require('fs');
+
+module.exports = function requireAsync(modulePath:string) {
     var id = 0; // current id for the required module
+
     try {
-        var file = require.resolve(modulePath);
-    }
-    catch (err) {
+        var file:string = require.resolve(modulePath);
+    } catch (err) {
         modulePath = path.join(__dirname, modulePath);
         if (fs.existsSync(modulePath)) {
             file = modulePath;
-        }
-        else if (fs.existsSync(modulePath + '.js')) {
+        } else if (fs.existsSync(modulePath + '.js')) {
             file = modulePath + '.js';
-        }
-        else {
+        } else {
             throw new Error('File "' + modulePath + '" does not exist.');
         }
     }
-    var forked;
-    var timeoutId = -1;
-    var waiting = 0;
+
+    var forked:Child.ChildProcess;
+    var timeoutId:number = -1;
+    var waiting:number = 0;
+
     /**
      * Calls the specified functions with arguments
      *
@@ -29,11 +31,7 @@ module.exports = function requireAsync(modulePath) {
      * @param arguments the arguments to use
      * @param callback the callback to use when function is done
      */
-    return function call(func, callback) {
-        var args = [];
-        for (var _i = 2; _i < arguments.length; _i++) {
-            args[_i - 2] = arguments[_i];
-        }
+    return function call(func:string, callback:(err:string, data:any) => void, ...args:any[]) {
         if (arguments.length < 2) {
             throw new Error('Invalid arguments. Function and callback must be included.');
         }
@@ -50,7 +48,7 @@ module.exports = function requireAsync(modulePath) {
             }, 30 * 1000); // keep alive for 30 seconds todo: configurable
         }
         var messageId = id++;
-        forked.send({ 'func': func, 'args': args, 'file': file, 'id': messageId });
+        forked.send({'func': func, 'args': args, 'file': file, 'id': messageId});
         waiting++;
         forked.setMaxListeners((forked._maxListeners || 0) + 2);
         forked.on('error', function (err) {
@@ -69,4 +67,3 @@ module.exports = function requireAsync(modulePath) {
         });
     };
 };
-//# sourceMappingURL=index.js.map

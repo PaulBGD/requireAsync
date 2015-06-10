@@ -1,3 +1,4 @@
+/// <reference path="typings/tsd.d.ts" />
 process.on('message', function (message) {
     try {
         var file = message.file;
@@ -8,8 +9,10 @@ process.on('message', function (message) {
         var object = require(file);
         var call = func == '' ? object : object[func];
         var data = call.apply(object, args);
-        process.send({id: id, data: {data: data}});
-    } catch (err) {
-        process.send({id: id, data: {error: err.stack}});
+        process.send({ id: id, data: { data: data } });
+    }
+    catch (err) {
+        process.send({ id: id, data: { error: err.stack } });
     }
 });
+//# sourceMappingURL=handler.js.map

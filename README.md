@@ -4,7 +4,7 @@ Call any function on another thread.
 ## Installing
 
 ````
-npm install requireAsync
+npm install require-async
 ````
 
 ## Usage
